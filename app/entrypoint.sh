@@ -49,7 +49,7 @@ function get_nginx_proxy_cid {
             break
         fi
     done
-    if [[ -z "$(nginx_proxy_container)" ]]; then
+    if [[ -z "$(get_nginx_proxy_container)" ]]; then
         echo "Error: can't get nginx-proxy container id !" >&2
         echo "Check that you use the --volumes-from option to mount volumes from the nginx-proxy or label the nginx proxy container to use with 'com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy=true'." >&2
         exit 1
@@ -84,7 +84,7 @@ function check_dh_group {
     fi
     if [[ ! -f /etc/nginx/certs/dhparam.pem ]]; then
         # If we don't have a docker-gen container, wait 5s for nginx-proxy dhparam.
-        if [[ -z "$(docker_gen_container)" ]]; then
+        if [[ -z "$(get_docker_gen_container)" ]]; then
             until [[ -f /etc/nginx/dhparam/dhparam.pem ]]; do
                 [[ $i -ge 5 ]] && break
                 sleep 1
@@ -113,7 +113,7 @@ source /app/functions.sh
 
 if [[ "$*" == "/bin/bash /app/start.sh" ]]; then
     check_docker_socket
-    if [[ -z "$(docker_gen_container)" ]]; then
+    if [[ -z "$(get_docker_gen_container)" ]]; then
         [[ -z "${NGINX_PROXY_CONTAINER:-}" ]] && get_nginx_proxy_cid
     fi
     check_writable_directory '/etc/nginx/certs'
